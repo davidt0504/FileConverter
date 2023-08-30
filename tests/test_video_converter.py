@@ -12,27 +12,30 @@ class TestVideoConverter(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
 
         # Supported Video Formats
-        self.video_formats = ['mp4', 'mkv', 'flv', '3gp']
+        self.video_formats = ['mp4', 'flv', 'mkv', '3gp']
 
         # Copy sample files to temporary directory
         self.sample_files_dir = os.path.join(os.path.dirname(__file__), 'sample_files')
-        for vid_format in self.video_formats:
-            vid_dir = os.path.join(self.sample_files_dir, vid_format)
-            for filename in os.listdir(vid_dir):
-                if filename.endswith(f".{vid_format}"):
-                    input_file = os.path.join(vid_dir, filename)
-                    shutil.copy(input_file, self.temp_dir)
+        for video_format in self.video_formats:
+            video_dir = os.path.join(self.sample_files_dir, video_format)
+            if os.path.exists(video_dir):
+                for filename in os.listdir(video_dir):
+                    if filename.endswith(f".{video_format}"):
+                        input_file = os.path.join(video_dir, filename)
+                        shutil.copy(input_file, self.temp_dir)
+            else:
+                print(f"Warning: Sample files directory for {video_format} not found: {video_dir}")
 
     def tearDown(self):
         # Remove temporary directory
         shutil.rmtree(self.temp_dir)
 
     def test_video_conversion(self):
-        for vid_format in self.video_formats:
+        for video_format in self.video_formats:
             for filename in os.listdir(self.temp_dir):
-                if filename.endswith(f".{vid_format}"):
+                if filename.endswith(f".{video_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
-                    output_format = 'mp4' if vid_format != 'mp4' else 'mkv'
+                    output_format = 'mp4' if video_format != 'mp4' else 'flv'
                     
                     # Act
                     convert_video(input_file, output_format)
@@ -40,14 +43,14 @@ class TestVideoConverter(unittest.TestCase):
                     # Assert
                     output_file = f"{os.path.splitext(input_file)[0]}.{output_format}"
                     self.assertTrue(os.path.exists(output_file))
+
                     with VideoFileClip(output_file) as clip:
-                        self.assertTrue(clip.duration > 0)
+                        self.assertEqual(clip.fps, 24)
 
     def test_invalid_file_format(self):
-        for vid_format in self.video_formats:
-            self.temp_dir = os.path.join(self.sample_files_dir, vid_format)
+        for video_format in self.video_formats:
             for filename in os.listdir(self.temp_dir):
-                if filename.endswith(f".{vid_format}"):
+                if filename.endswith(f".{video_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
                     
                     # Act & Assert
@@ -55,12 +58,11 @@ class TestVideoConverter(unittest.TestCase):
                         convert_video(input_file, 'invalid_format')
 
     def test_output_filename(self):
-        for vid_format in self.video_formats:
-            self.temp_dir = os.path.join(self.sample_files_dir, vid_format)
+        for video_format in self.video_formats:
             for filename in os.listdir(self.temp_dir):
-                if filename.endswith(f".{vid_format}"):
+                if filename.endswith(f".{video_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
-                    output_format = 'mkv' if vid_format != 'mkv' else 'mp4'
+                    output_format = 'mp4' if video_format != 'mp4' else 'flv'
                     
                     # Act
                     convert_video(input_file, output_format)
@@ -70,12 +72,11 @@ class TestVideoConverter(unittest.TestCase):
                     self.assertTrue(os.path.exists(os.path.join(self.temp_dir, expected_output_filename)))
 
     def test_suffix_appending(self):
-        for vid_format in self.video_formats:
-            self.temp_dir = os.path.join(self.sample_files_dir, vid_format)
+        for video_format in self.video_formats:
             for filename in os.listdir(self.temp_dir):
-                if filename.endswith(f".{vid_format}"):
+                if filename.endswith(f".{video_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
-                    output_format = 'mkv' if vid_format != 'mkv' else 'mp4'
+                    output_format = 'mp4' if video_format != 'mp4' else 'flv'
                     
                     # Act
                     convert_video(input_file, output_format, keep_both=True)

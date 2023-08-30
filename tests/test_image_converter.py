@@ -26,7 +26,6 @@ class TestImageConverter(unittest.TestCase):
             else:
                 print(f"Warning: Sample files directory for {img_format} not found: {img_dir}")
 
-
     def tearDown(self):
         # Remove temporary directory
         shutil.rmtree(self.temp_dir)
@@ -49,7 +48,6 @@ class TestImageConverter(unittest.TestCase):
 
     def test_invalid_file_format(self):
         for img_format in self.image_formats:
-            self.temp_dir = os.path.join(self.sample_files_dir, img_format)
             for filename in os.listdir(self.temp_dir):
                 if filename.endswith(f".{img_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
@@ -60,7 +58,6 @@ class TestImageConverter(unittest.TestCase):
 
     def test_output_filename(self):
         for img_format in self.image_formats:
-            self.temp_dir = os.path.join(self.sample_files_dir, img_format)
             for filename in os.listdir(self.temp_dir):
                 if filename.endswith(f".{img_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
@@ -75,7 +72,6 @@ class TestImageConverter(unittest.TestCase):
 
     def test_suffix_appending(self):
         for img_format in self.image_formats:
-            self.temp_dir = os.path.join(self.sample_files_dir, img_format)
             for filename in os.listdir(self.temp_dir):
                 if filename.endswith(f".{img_format}"):
                     input_file = os.path.join(self.temp_dir, filename)
@@ -90,4 +86,4 @@ class TestImageConverter(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
+    
